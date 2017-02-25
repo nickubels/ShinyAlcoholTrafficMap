@@ -107,7 +107,7 @@ server <- function(input, output) {
   # Generate the map using Leaflet (Mapbox <3)
   output$map <- renderLeaflet({
     leaflet(geojson) %>%
-      # Add Mapbox tiles and attribution
+      # Add Mapbox tiles and attribution, remove contents of addTiles to switch to default OSM
       addTiles( urlTemplate = mbox,
                attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
                ) %>%
