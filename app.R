@@ -4,6 +4,7 @@ library(dplyr)
 library(stringr)
 library(ggplot2)
 library(leaflet)
+source("key.r")
 codes <- get_codes()
 RoadSafey <- codes[grepl("^RS",codes$label), ]
 alcohollawexistance <- get_data("RS_204")
@@ -19,10 +20,10 @@ server <- function(input, output) {
   output$map <- renderLeaflet({
     leaflet() %>%
       addTiles(
-        urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+        urlTemplate = mbox,
         attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
       ) %>%
-      setView(lng = -93.85, lat = 37.45, zoom = 4)
+      setView(lng = 30, lat = 31, zoom = 2)
   })
 }
 shinyApp(ui = ui, server = server)
