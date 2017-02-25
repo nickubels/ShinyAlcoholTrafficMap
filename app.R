@@ -23,7 +23,8 @@ percalcodeaths$value[percalcodeaths$country == "United Kingdom of Great Britain 
 percalcodeaths$value[percalcodeaths$country == "Bosnia and Herzegovina"] <- 15.0
 percalcodeaths$value[percalcodeaths$country == "Spain"] <- 17.0
 alcohollawexistance$value[alcohollawexistance$country == "Australia"] <- "Yes"
-defbybac$value[defbybac$country == "Benin"] <- NA
+alcohollawexistance$value[alcohollawexistance$country == "Maldives"] <- NA
+defbybac$value[defbybac$value == "-"] <- NA
 percalcodeaths$value <- as.numeric(percalcodeaths$value)
 
 colours <- colorBin("YlOrRd", percalcodeaths$value, na.color = "#808080", bins=10)
@@ -47,8 +48,22 @@ for (i in 1:length(alcohollawexistance$value))
 
 
 summarydata <- data.frame(c("Mean % of alcohol related traffic fatalities", "Max % of alcohol related traffic fatalities","Min % of alcohol related traffic fatalities"),
-                          c(round(mean(percalcodeaths$value, na.rm=TRUE),1),max(percalcodeaths$value, na.rm = TRUE),min(percalcodeaths$value, na.rm = TRUE)))
-names(summarydata) <- c('Description','Value')
+                          c(round(mean(geojson$perdeaths, na.rm=TRUE),1),max(geojson$perdeaths, na.rm = TRUE),min(geojson$perdeaths, na.rm = TRUE)),
+                          c('None','South Africa','Oman'))
+names(summarydata) <- c('Description','Value', 'Country')
+
+lawplot <- data.frame(c("Yes", "No", "NA"),c(
+  length(geojson$law[geojson$law=="Yes"  & !is.na(geojson$law)]),
+  length(geojson$law[geojson$law=="No" & !is.na(geojson$law)]),
+  length(geojson$law[is.na(geojson$law)])))
+
+names(lawplot) <- c('Label','Data')
+
+bacplot <- data.frame(c("Yes", "No", "NA"),c(
+  length(geojson$defbybac[geojson$defbybac=="Yes" & !is.na(geojson$defbybac)]),
+  length(geojson$defbybac[geojson$defbybac=="No" & !is.na(geojson$defbybac)]),
+  length(geojson$defbybac[is.na(geojson$defbybac)])))
+names(bacplot) <- c('Label','Data')
 
 ui <- bootstrapPage(
   theme = "flatly",
@@ -56,19 +71,18 @@ ui <- bootstrapPage(
                       leafletOutput("map", width = "100%", height = "100%"),
                       absolutePanel(top = 60, left = "auto", right = 20, bottom = "auto",
                                     width = 330, height = "auto",wellPanel(h3("Alcohol & traffic"),"This interactive map is made in RStudio with the Shiny and Leaflet packages. Data is collected from the WHO using the WHO package.",
-                                    hr(),selectInput("select",label = h4("Select:"), choices = list("Summary" = 1), selected = 1),hr(),htmlOutput("plots")))
+                                    hr(),selectInput("select",label = h4("Summarized information:"), choices = list("% of alcohol related traffic fatalities" = 1,
+"Existence of a national drunk-driving law" = 2,"Definition of drunk-driving by BAC
+"=3), selected = 1),hr(),htmlOutput("plots")))
                       )
 server <- function(input, output) {
-  myOptions <- reactive({
-    list(
-      page='enable',
-      pageSize=4,
-      width=550
-    )
-  })
   output$plots <- renderGvis({
     if(input$select == 1){
       gvisTable(summarydata)
+    } else if(input$select == 2){
+      gvisPieChart(lawplot, options=list(title="Existence of a national drunk-driving law"))
+    } else if(input$select == 3){
+      gvisPieChart(bacplot, options=list(title="Definition of drunk-driving by BAC"))
     }}
   )
   output$map <- renderLeaflet({
@@ -76,7 +90,7 @@ server <- function(input, output) {
       addTiles( urlTemplate = mbox,
                attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
                ) %>%
-      setView(lng = 30, lat = 31, zoom = 2) %>%
+      setView(lng = 30, lat = 31, zoom = 3) %>%
       addPolygons(color = "#444444", weight = 1,stroke = TRUE, smoothFactor = 0.3, fillOpacity = 0.7,
                   highlightOptions = highlightOptions(color = "blue", weight = 2,
                                                       bringToFront = TRUE),
