@@ -12,7 +12,7 @@ library(htmltools)
 library(googleVis)
 
 # Fetching the MapBox secret. Change path to your own personal path
-source("~/Development/ShinyApp/key.r")
+source("key.r")
 mbox <- mboxkey()
 
 # Fetch data from WHO
@@ -24,7 +24,7 @@ deaths <- get_data("RS_198")
 
 # From https://github.com/johan/world.geo.json/blob/master/countries.geo.json?short_path=afdfc39
 # Please do not forget to change the URL
-geojson <- geojson_read("~/Development/ShinyApp/countries.geojson", what = "sp")
+geojson <- geojson_read("countries.geojson", what = "sp")
 
 # Cleaning some data to make it usable for our purposes
 percalcodeaths$value[percalcodeaths$country == "United Kingdom of Great Britain and Northern Ireland"] <- 17.0
