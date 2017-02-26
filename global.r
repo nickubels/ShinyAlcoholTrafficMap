@@ -10,6 +10,12 @@ library(geojsonio)
 library(countrycode)
 library(htmltools)
 library(googleVis)
+library(RColorBrewer)
+library(sp)
+library(utils)
+library(methods)
+library(grDevices)
+library(graphics)
 
 # Fetching the MapBox secret. Change path to your own personal path
 source("key.r")
@@ -23,8 +29,8 @@ deaths <- get_data("RS_198")
 
 
 # From https://github.com/johan/world.geo.json/blob/master/countries.geo.json?short_path=afdfc39
-# Please do not forget to change the URL
-geojson <- geojson_read("countries.geojson", what = "sp")
+# Please do not forget to change the path
+geojson <- geojsonio::geojson_read("countries.geojson", what = "sp")
 
 # Cleaning some data to make it usable for our purposes
 percalcodeaths$value[percalcodeaths$country == "United Kingdom of Great Britain and Northern Ireland"] <- 17.0
@@ -36,8 +42,8 @@ defbybac$value[defbybac$value == "-"] <- NA
 percalcodeaths$value <- as.numeric(percalcodeaths$value)
 
 # Adding country codes to match to polygons
-percalcodeaths$countrycode <- countrycode(percalcodeaths$country, "country.name", "wb", warn = TRUE) 
-alcohollawexistance$countrycode <- countrycode(alcohollawexistance$country, "country.name", "wb", warn = TRUE) 
+percalcodeaths$countrycode <- countrycode(percalcodeaths$country, "country.name", "wb", warn = TRUE)
+alcohollawexistance$countrycode <- countrycode(alcohollawexistance$country, "country.name", "wb", warn = TRUE)
 defbybac$countrycode <- countrycode(defbybac$country, "country.name", "wb", warn = TRUE)
 deaths$countrycode <- countrycode(deaths$country, "country.name", "wb", warn = TRUE)
 
@@ -49,14 +55,14 @@ alcohollawexistance <- alcohollawexistance[order(alcohollawexistance$country),]
 defbybac <- defbybac[order(defbybac$country),]
 deaths <- deaths[order(deaths$country),]
 
+# Calculate alcohol related fatalities per 100000
+deaths$alcohol <- round((deaths$value*(percalcodeaths$value/100)),1)
+
 # Link data to geojson
-for (i in 1:length(alcohollawexistance$value))
-{
-  geojson$deaths[geojson$id == deaths$countrycode[i]] <- round((deaths$value[i]*(percalcodeaths$value[i]/100)),1)
-  geojson$defbybac[geojson$id == defbybac$countrycode[i]] <- defbybac$value[i]
-  geojson$perdeaths[geojson$id == percalcodeaths$countrycode[i]] <- percalcodeaths$value[i]
-  geojson$law[geojson$id == alcohollawexistance$countrycode[i]] <- alcohollawexistance$value[i]
-}
+geojson$deaths <- deaths$alcohol[match(geojson$id,deaths$countrycode)]
+geojson$defbybac <- defbybac$value[match(geojson$id,defbybac$countrycode)]
+geojson$perdeaths <- percalcodeaths$value[match(geojson$id,percalcodeaths$countrycode)]
+geojson$law <- alcohollawexistance$value[match(geojson$id,alcohollawexistance$countrycode)]
 
 # Initiate colous for map
 colours <- colorNumeric("YlOrRd", domain = geojson$perdeaths, na.color = "#808080")
@@ -80,3 +86,4 @@ bacplot <- data.frame(c("Yes", "No", "NA"),c(
   length(geojson$defbybac[geojson$defbybac=="No" & !is.na(geojson$defbybac)]),
   length(geojson$defbybac[is.na(geojson$defbybac)])))
 names(bacplot) <- c('Label','Data')
+
