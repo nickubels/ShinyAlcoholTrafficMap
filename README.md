@@ -6,7 +6,7 @@ This map is with four datasets from the WHO on alcohol and traffic. It is made u
 1. Download the files
 2. Run the `setup.r` file to fetch all dependencies
 3. Rename `EXAMPLE_key.r` to `key.r` and fill in the required fields in the API url. You can also choose to pick a different tiles provider for your baselayer (or use the default OSM)
-4. Change the paths on line 15 and 27 of `app.r`
+4. Change the paths on line 15 and 27 of `global.r`
 5. Select **Run App** in RStudio
 
 ### Used resources
