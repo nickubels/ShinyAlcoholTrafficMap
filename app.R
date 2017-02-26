@@ -41,8 +41,7 @@ alcohollawexistance$countrycode <- countrycode(alcohollawexistance$country, "cou
 defbybac$countrycode <- countrycode(defbybac$country, "country.name", "wb", warn = TRUE)
 deaths$countrycode <- countrycode(deaths$country, "country.name", "wb", warn = TRUE)
 
-# Initiate colous for map
-colours <- colorBin("YlOrRd", percalcodeaths$value, na.color = "#808080", bins=10)
+
 
 # Sort data alphabetically
 percalcodeaths <- percalcodeaths[order(percalcodeaths$country),]
@@ -58,6 +57,9 @@ for (i in 1:length(alcohollawexistance$value))
   geojson$perdeaths[geojson$id == percalcodeaths$countrycode[i]] <- percalcodeaths$value[i]
   geojson$law[geojson$id == alcohollawexistance$countrycode[i]] <- alcohollawexistance$value[i]
 }
+
+# Initiate colous for map
+colours <- colorNumeric("YlOrRd", domain = geojson$perdeaths, na.color = "#808080")
 
 # Make dataframe for summary table, country names were extracted by hand (had some trouble selecting a single element...)
 summarydata <- data.frame(c("Mean % of alcohol related traffic fatalities", "Max % of alcohol related traffic fatalities","Min % of alcohol related traffic fatalities"),
