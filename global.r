@@ -17,6 +17,9 @@ library(methods)
 library(grDevices)
 library(graphics)
 
+# this is a dirty workaround for the code to work on shinyapps.io. Do not uncomment
+#load('data/ShinyData.RData')
+
 # Fetching the MapBox secret. Change path to your own personal path
 source("key.r")
 mbox <- mboxkey()
