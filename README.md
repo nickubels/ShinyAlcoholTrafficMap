@@ -1,6 +1,6 @@
 ## Traffic & Alcohol RStudio Shiny map
 
-This map is with four datasets from the WHO on alcohol and traffic. It is made using the Shiny framework in combination with Leaflet and googleVis. The map was made for the University of Groningen course *Research Methods (Data analytics and communication)* (KIB.OZM10).
+This map is contains four datasets from the WHO on alcohol and traffic. It is made using the Shiny framework in combination with Leaflet and googleVis. The map was made for the University of Groningen course *Research Methods (Data analytics and communication)* (KIB.OZM10).
 ![Example of map](image.png)
 ### Usage
 1. Download the files
